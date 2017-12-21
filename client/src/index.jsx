@@ -10,12 +10,18 @@ class App extends React.Component {
     this.state = { 
       repos: []
     }
-
+    
   }
 
   search (term) {
     console.log(`${term} was searched`);
     // TODO
+    fetch('http://localhost:1128/repos', {
+        method: 'POST',
+        body: term
+    }).then(function(res) {
+      console.log('done', res);
+    })
   }
 
   render () {
