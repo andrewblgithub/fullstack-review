@@ -18,7 +18,7 @@ class App extends React.Component {
   }
 
   getTopRepos () {
-    fetch('http://repofetch.herokuapp.com/repos')
+    fetch('https://repofetch.herokuapp.com/repos')
     .then((data)=> {
       return data.json();
     })
@@ -26,7 +26,7 @@ class App extends React.Component {
       this.setState({repos: parsedData});
     })
 
-    fetch('http://repofetch.herokuapp.com/repocount')
+    fetch('https://repofetch.herokuapp.com/repocount')
     .then((data)=> {
       return data.json();
     })
@@ -38,7 +38,7 @@ class App extends React.Component {
   search (term) {
     // TODO
     if (term) {
-      fetch('http://repofetch.herokuapp.com/repos', {
+      fetch('https://repofetch.herokuapp.com/repos', {
         method: 'POST',
         body: term
       })
