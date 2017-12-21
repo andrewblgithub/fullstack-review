@@ -14,16 +14,9 @@ app.post('/repos', function (req, res) {
   // This route should take the github username provided
   // and get the repo information from the github API, then
   // save the repo information in the database
-  console.log(getReposByUsername);
-  getReposByUsername(req.body, (data)=> { 
+  getReposByUsername(req.body, (data)=> {
     let userData = JSON.parse(data);
-    // console.log(userData[0].name)
-    // console.log(userData[0].owner.login)
-    // console.log(userData[0].html_url)
-    // console.log(userData[0].stargazers_count)
-    // console.log(userData[0].forks)
     db.save(userData);
-    res.send('req.body');
   });
   
 });
@@ -31,10 +24,18 @@ app.post('/repos', function (req, res) {
 app.get('/repos', function (req, res) {
   // TODO - your code here!
   // This route should send back the top 25 repos
-  res.json('25 Repos')
+  db.getTop25((data)=> {
+    res.send(data);
+  });
 });
 
-let port = 1128;
+app.get('/repocount', function (req, res) {
+  db.getTotalRepos((data)=> {
+    res.send({count: data});
+  })
+})
+
+let port = process.env.PORT || 1128;
 
 app.listen(port, function() {
   console.log(`listening on port ${port}`);

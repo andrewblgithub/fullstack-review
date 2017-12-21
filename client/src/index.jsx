@@ -8,27 +8,49 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = { 
-      repos: []
+      repos: [],
+      count: 0
     }
-    
+  }
+
+  componentDidMount () {
+    this.getTopRepos();
+  }
+
+  getTopRepos () {
+    fetch('http://repofetch.herokuapp.com/repos')
+    .then((data)=> {
+      return data.json();
+    })
+    .then((parsedData)=> {
+      this.setState({repos: parsedData});
+    })
+
+    fetch('http://repofetch.herokuapp.com/repocount')
+    .then((data)=> {
+      return data.json();
+    })
+    .then((parsedData)=> {
+      this.setState({count: parsedData.count});
+    })
   }
 
   search (term) {
-    console.log(`${term} was searched`);
     // TODO
-    fetch('http://localhost:1128/repos', {
+    if (term) {
+      fetch('http://repofetch.herokuapp.com/repos', {
         method: 'POST',
         body: term
-    }).then(function(res) {
-      console.log('done', res);
-    })
+      })
+      this.getTopRepos();
+    }
   }
 
   render () {
     return (<div>
       <h1>Github Fetcher</h1>
-      <RepoList repos={this.state.repos}/>
       <Search onSearch={this.search.bind(this)}/>
+      <RepoList count={this.state.count} repos={this.state.repos}/>
     </div>)
   }
 }

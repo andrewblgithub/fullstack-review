@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/fetcher', (err)=> {
+const url = process.env.MONGODB_URI || 'mongodb://localhost/fetcher';
+mongoose.connect(url, (err)=> {
   if (err) {
     throw err;
   }
@@ -23,25 +24,44 @@ let save = (repos) => {
   // This function should save a repo or repos to
   // the MongoDB
   repos.forEach((repo)=> {
-    console.log(repo.html_url);
-    let repoData = new Repo({
-      url: repo.html_url,
-      name: repo.name,
-      owner: repo.owner.login,
-      forks: repo.forks,
-      stargazers: repo.stargazers
-    })
     Repo.update(
-      {url: repoData.url},
-      repoData,
+      {url: repo.html_url},
+      {
+        url: repo.html_url,
+        name: repo.name,
+        owner: repo.owner.login,
+        forks: repo.forks,
+        stargazers: repo.stargazers_count
+      },
       {upsert: true},
       (err, doc)=> {
         if (err) {
           throw err;
         }
+        console.log('Repo data upserted!');
       }
     )
   })
 }
 
+let getTop25 = (callback)=> {
+  Repo.find({}).sort('-stargazers').limit(25).exec((err, docs)=> {
+    if (err) {
+      throw err;
+    }
+    callback(docs);
+  });
+}
+
+let getTotalRepos = (callback)=> {
+  Repo.count({}, (err, docs)=> {
+    if (err) {
+      throw err;
+    }
+    callback(docs);
+  });
+}
+
 module.exports.save = save;
+module.exports.getTop25 = getTop25;
+module.exports.getTotalRepos = getTotalRepos;

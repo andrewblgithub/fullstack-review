@@ -19,7 +19,9 @@ let getReposByUsername = (user, callback) => {
     if (err) {
       throw err;
     }
-    callback(body);
+    if (JSON.parse(body).message !== 'Not Found') {
+      callback(body);
+    }
   })
 
 }
